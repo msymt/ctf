@@ -82,4 +82,4 @@ payload += p64(0x004005e3) # call system
 #### 参考
 1. https://m412u.hatenablog.com/entry/2019/05/21/124929
 2. https://madousho.hatenadiary.jp/entry/2019/05/20/015653
-3. https://github.com/TeamHarekaze/HarekazeCTF2019-challenges/blob/master/baby_rop/README.mdv
+3. https://github.com/TeamHarekaze/HarekazeCTF2019-challenges/blob/master/baby_rop/README.md
