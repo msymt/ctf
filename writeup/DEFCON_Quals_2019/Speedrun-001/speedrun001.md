@@ -77,7 +77,7 @@ gdb-peda$ patto DAn;An)
 DAn;An) found at offset: 1032
 ```
 
-という事で, リターンアドレスから入力部までのオフセットは`1032`bytesだと分かりました.
+という事で, リターンアドレスから入力部までのオフセットは`1032`bytesだと分かりました.
 
 
 次に`statically linked`を利用します.
@@ -85,7 +85,7 @@ DAn;An) found at offset: 1032
 次のリンク先を参考にして, `execve('bin/sh')`を実行させることを目標とします.
 https://blog.rchapman.org/posts/Linux_System_Call_Table_for_x86_64/
 
-最終的には. 以下のように各レジスタに必要な情報を入れていきます.
+最終的には. 以下のように各レジスタに必要な情報(ない場合は`null`)を入れていきます.
 
 | %rax | System call | %rdi | %rsi | %rdx |
 |---|---|---|---|---|
