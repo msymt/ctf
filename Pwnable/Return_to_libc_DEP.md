@@ -8,7 +8,7 @@ http://inaz2.hatenablog.com/entry/2014/03/23/233759
 `DEP(Data Execution Prevention)`とは
 >DEP（Data Execution Prevention）は、その名前の通りデータエリアでのプログラムの実行を防止するという、ハードウェアで実装された機能です.<br>
 (中略)DEPは、スタックエリアやヒープエリア、つまりコードエリア以外の領域でプログラムが実行されると、プログラムを異常終了させます。<br>
-出典元: https://www.atmarkit.co.jp/ait/articles/1410/15/news004.html
+出典元: DEPの仕組みとその回避手法 (1/3)https://www.atmarkit.co.jp/ait/articles/1410/15/news004.html
 
 
 ## 環境
