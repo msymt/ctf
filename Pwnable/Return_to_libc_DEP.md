@@ -1,4 +1,4 @@
-# 「Return-to-libcでDEPを回避してみる」を再現
+# 「Return-to-libcでDEPを回避してみる」を再現(未完成)
 
 ももいろテクノロジーさんの以下の記事を再現してみたというメモです
 http://inaz2.hatenablog.com/entry/2014/03/23/233759
@@ -103,18 +103,8 @@ $ ldd bof
 ```
 $ gdb -q system
 Reading symbols from system...(no debugging symbols found)...done.
-gdb-peda$ pdisass main
-Dump of assembler code for function main:
-   0x000000000000064a <+0>:	push   rbp
-   0x000000000000064b <+1>:	mov    rbp,rsp
-   0x000000000000064e <+4>:	lea    rdi,[rip+0x9f]        # 0x6f4
-   0x0000000000000655 <+11>:	call   0x520 <system@plt>
-   0x000000000000065a <+16>:	mov    eax,0x0
-   0x000000000000065f <+21>:	pop    rbp
-   0x0000000000000660 <+22>:	ret
-End of assembler dump.
-gdb-peda$ b system
-Breakpoint 1 at 0x520
+gdb-peda$ b main
+Breakpoint 1 at 0x64e
 gdb-peda$ r
 Starting program: /home/vagrant/momoiro/system
 [----------------------------------registers-----------------------------------]
@@ -123,10 +113,10 @@ RBX: 0x0
 RCX: 0x555555554670 (<__libc_csu_init>:	push   r15)
 RDX: 0x7fffffffe2b8 --> 0x7fffffffe511 ("LS_COLORS=rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc"...)
 RSI: 0x7fffffffe2a8 --> 0x7fffffffe4f4 ("/home/vagrant/momoiro/system")
-RDI: 0x5555555546f4 --> 0x68732f6e69622f ('/bin/sh')
+RDI: 0x1
 RBP: 0x7fffffffe1c0 --> 0x555555554670 (<__libc_csu_init>:	push   r15)
-RSP: 0x7fffffffe1b8 --> 0x55555555465a (<main+16>:	mov    eax,0x0)
-RIP: 0x7ffff7a33440 (<__libc_system>:	test   rdi,rdi)
+RSP: 0x7fffffffe1c0 --> 0x555555554670 (<__libc_csu_init>:	push   r15)
+RIP: 0x55555555464e (<main+4>:	lea    rdi,[rip+0x9f]        # 0x5555555546f4)
 R8 : 0x7ffff7dd0d80 --> 0x0
 R9 : 0x7ffff7dd0d80 --> 0x0
 R10: 0x0
@@ -137,14 +127,116 @@ R14: 0x0
 R15: 0x0
 EFLAGS: 0x246 (carry PARITY adjust ZERO sign trap INTERRUPT direction overflow)
 [-------------------------------------code-------------------------------------]
-   0x7ffff7a33439 <cancel_handler+217>:	pop    rbx
-   0x7ffff7a3343a <cancel_handler+218>:	ret
-   0x7ffff7a3343b:	nop    DWORD PTR [rax+rax*1+0x0]
-=> 0x7ffff7a33440 <__libc_system>:	test   rdi,rdi
-   0x7ffff7a33443 <__libc_system+3>:	je     0x7ffff7a33450 <__libc_system+16>
-   0x7ffff7a33445 <__libc_system+5>:	jmp    0x7ffff7a32eb0 <do_system>
-   0x7ffff7a3344a <__libc_system+10>:	nop    WORD PTR [rax+rax*1+0x0]
-   0x7ffff7a33450 <__libc_system+16>:	lea    rdi,[rip+0x164a4b]        # 0x7ffff7b97ea2
+   0x555555554645 <frame_dummy+5>:	jmp    0x5555555545b0 <register_tm_clones>
+   0x55555555464a <main>:	push   rbp
+   0x55555555464b <main+1>:	mov    rbp,rsp
+=> 0x55555555464e <main+4>:	lea    rdi,[rip+0x9f]        # 0x5555555546f4
+   0x555555554655 <main+11>:	call   0x555555554520 <system@plt>
+   0x55555555465a <main+16>:	mov    eax,0x0
+   0x55555555465f <main+21>:	pop    rbp
+   0x555555554660 <main+22>:	ret
+[------------------------------------stack-------------------------------------]
+0000| 0x7fffffffe1c0 --> 0x555555554670 (<__libc_csu_init>:	push   r15)
+0008| 0x7fffffffe1c8 --> 0x7ffff7a05b97 (<__libc_start_main+231>:	mov    edi,eax)
+0016| 0x7fffffffe1d0 --> 0x1
+0024| 0x7fffffffe1d8 --> 0x7fffffffe2a8 --> 0x7fffffffe4f4 ("/home/vagrant/momoiro/system")
+0032| 0x7fffffffe1e0 --> 0x100008000
+0040| 0x7fffffffe1e8 --> 0x55555555464a (<main>:	push   rbp)
+0048| 0x7fffffffe1f0 --> 0x0
+0056| 0x7fffffffe1f8 --> 0x3884e47b9cc204a2
+[------------------------------------------------------------------------------]
+Legend: code, data, rodata, value
+
+Breakpoint 1, 0x000055555555464e in main ()
+
+gdb-peda$ pdisass main
+Dump of assembler code for function main:
+   0x000055555555464a <+0>:	push   rbp
+   0x000055555555464b <+1>:	mov    rbp,rsp
+   0x000055555555464e <+4>:	lea    rdi,[rip+0x9f]        # 0x5555555546f4
+   0x0000555555554655 <+11>:	call   0x555555554520 <system@plt>
+   0x000055555555465a <+16>:	mov    eax,0x0
+   0x000055555555465f <+21>:	pop    rbp
+   0x0000555555554660 <+22>:	ret
+End of assembler dump.
+
+gdb-peda$ si
+[----------------------------------registers-----------------------------------]
+RAX: 0x55555555464a (<main>:	push   rbp)
+RBX: 0x0
+RCX: 0x555555554670 (<__libc_csu_init>:	push   r15)
+RDX: 0x7fffffffe2b8 --> 0x7fffffffe511 ("LS_COLORS=rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc"...)
+RSI: 0x7fffffffe2a8 --> 0x7fffffffe4f4 ("/home/vagrant/momoiro/system")
+RDI: 0x5555555546f4 --> 0x68732f6e69622f ('/bin/sh')
+RBP: 0x7fffffffe1c0 --> 0x555555554670 (<__libc_csu_init>:	push   r15)
+RSP: 0x7fffffffe1c0 --> 0x555555554670 (<__libc_csu_init>:	push   r15)
+RIP: 0x555555554655 (<main+11>:	call   0x555555554520 <system@plt>)
+R8 : 0x7ffff7dd0d80 --> 0x0
+R9 : 0x7ffff7dd0d80 --> 0x0
+R10: 0x0
+R11: 0x0
+R12: 0x555555554540 (<_start>:	xor    ebp,ebp)
+R13: 0x7fffffffe2a0 --> 0x1
+R14: 0x0
+R15: 0x0
+EFLAGS: 0x246 (carry PARITY adjust ZERO sign trap INTERRUPT direction overflow)
+[-------------------------------------code-------------------------------------]
+   0x55555555464a <main>:	push   rbp
+   0x55555555464b <main+1>:	mov    rbp,rsp
+   0x55555555464e <main+4>:	lea    rdi,[rip+0x9f]        # 0x5555555546f4
+=> 0x555555554655 <main+11>:	call   0x555555554520 <system@plt>
+   0x55555555465a <main+16>:	mov    eax,0x0
+   0x55555555465f <main+21>:	pop    rbp
+   0x555555554660 <main+22>:	ret
+   0x555555554661:	nop    WORD PTR cs:[rax+rax*1+0x0]
+Guessed arguments:
+arg[0]: 0x5555555546f4 --> 0x68732f6e69622f ('/bin/sh')
+[------------------------------------stack-------------------------------------]
+0000| 0x7fffffffe1c0 --> 0x555555554670 (<__libc_csu_init>:	push   r15)
+0008| 0x7fffffffe1c8 --> 0x7ffff7a05b97 (<__libc_start_main+231>:	mov    edi,eax)
+0016| 0x7fffffffe1d0 --> 0x1
+0024| 0x7fffffffe1d8 --> 0x7fffffffe2a8 --> 0x7fffffffe4f4 ("/home/vagrant/momoiro/system")
+0032| 0x7fffffffe1e0 --> 0x100008000
+0040| 0x7fffffffe1e8 --> 0x55555555464a (<main>:	push   rbp)
+0048| 0x7fffffffe1f0 --> 0x0
+0056| 0x7fffffffe1f8 --> 0x3884e47b9cc204a2
+[------------------------------------------------------------------------------]
+Legend: code, data, rodata, value
+0x0000555555554655 in main ()
+gdb-peda$ si
+[----------------------------------registers-----------------------------------]
+RAX: 0x55555555464a (<main>:	push   rbp)
+RBX: 0x0
+RCX: 0x555555554670 (<__libc_csu_init>:	push   r15)
+RDX: 0x7fffffffe2b8 --> 0x7fffffffe511 ("LS_COLORS=rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc"...)
+RSI: 0x7fffffffe2a8 --> 0x7fffffffe4f4 ("/home/vagrant/momoiro/system")
+RDI: 0x5555555546f4 --> 0x68732f6e69622f ('/bin/sh')
+RBP: 0x7fffffffe1c0 --> 0x555555554670 (<__libc_csu_init>:	push   r15)
+RSP: 0x7fffffffe1b8 --> 0x55555555465a (<main+16>:	mov    eax,0x0)
+RIP: 0x555555554520 (<system@plt>:	jmp    QWORD PTR [rip+0x200aaa]        # 0x555555754fd0)
+R8 : 0x7ffff7dd0d80 --> 0x0
+R9 : 0x7ffff7dd0d80 --> 0x0
+R10: 0x0
+R11: 0x0
+R12: 0x555555554540 (<_start>:	xor    ebp,ebp)
+R13: 0x7fffffffe2a0 --> 0x1
+R14: 0x0
+R15: 0x0
+EFLAGS: 0x246 (carry PARITY adjust ZERO sign trap INTERRUPT direction overflow)
+[-------------------------------------code-------------------------------------]
+   0x555555554511:	xor    eax,0x200aaa
+   0x555555554516:	jmp    QWORD PTR [rip+0x200aac]        # 0x555555754fc8
+   0x55555555451c:	nop    DWORD PTR [rax+0x0]
+=> 0x555555554520 <system@plt>:	jmp    QWORD PTR [rip+0x200aaa]        # 0x555555754fd0
+ | 0x555555554526 <system@plt+6>:	push   0x0
+ | 0x55555555452b <system@plt+11>:	jmp    0x555555554510
+ | 0x555555554530 <__cxa_finalize@plt>:	jmp    QWORD PTR [rip+0x200ac2]        # 0x555555754ff8
+ | 0x555555554536 <__cxa_finalize@plt+6>:	xchg   ax,ax
+ |->   0x7ffff7a33440 <__libc_system>:	test   rdi,rdi
+       0x7ffff7a33443 <__libc_system+3>:	je     0x7ffff7a33450 <__libc_system+16>
+       0x7ffff7a33445 <__libc_system+5>:	jmp    0x7ffff7a32eb0 <do_system>
+       0x7ffff7a3344a <__libc_system+10>:	nop    WORD PTR [rax+rax*1+0x0]
+                                                                  JUMP is taken
 [------------------------------------stack-------------------------------------]
 0000| 0x7fffffffe1b8 --> 0x55555555465a (<main+16>:	mov    eax,0x0)
 0008| 0x7fffffffe1c0 --> 0x555555554670 (<__libc_csu_init>:	push   r15)
@@ -156,16 +248,20 @@ EFLAGS: 0x246 (carry PARITY adjust ZERO sign trap INTERRUPT direction overflow)
 0056| 0x7fffffffe1f0 --> 0x0
 [------------------------------------------------------------------------------]
 Legend: code, data, rodata, value
-
-Breakpoint 1, __libc_system (line=0x5555555546f4 "/bin/sh") at ../sysdeps/posix/system.c:180
-warning: Source file is more recent than executable.
-gdb-peda$ find /bin/sh
-Searching for '/bin/sh' in: None ranges
-Found 3 results, display max 3 items:
-system : 0x5555555546f4 --> 0x68732f6e69622f ('/bin/sh')
-system : 0x5555557546f4 --> 0x68732f6e69622f ('/bin/sh')
-  libc : 0x7ffff7b97e9a --> 0x68732f6e69622f ('/bin/sh')
+0x0000555555554520 in system@plt ()
+gdb-peda$ x/gx 0x7fffffffe1b8
+0x7fffffffe1b8:	0x000055555555465a
+gdb-peda$ x/i 0x000055555555465a
+   0x55555555465a <main+16>:	mov    eax,0x0
+gdb-peda$ x/20wx 0x7fffffffe1b8
+0x7fffffffe1b8:	0x5555465a	0x00005555	0x55554670	0x00005555
+0x7fffffffe1c8:	0xf7a05b97	0x00007fff	0x00000001	0x00000000
+0x7fffffffe1d8:	0xffffe2a8	0x00007fff	0x00008000	0x00000001
+0x7fffffffe1e8:	0x5555464a	0x00005555	0x00000000	0x00000000
+0x7fffffffe1f8:	0x9cc204a2	0x3884e47b	0x55554540	0x00005555
 ```
+
+
 pedaの見方についてですが, リトルエンディアンに気をつけ, ASCIIコード表をみて変換すると
 ```
 68 -> h
@@ -184,6 +280,8 @@ pedaの見方についてですが, リトルエンディアンに気をつけ, 
 整理すると以下のようになってます.
 ```
 0x7fffffffe1b8:
-  0x55555555465a
-
+  0x55555555465a // <main+16>: mov eax,0x0 (return address from system)
+  ...
+0x7fffffffe1c0:
+  0x555555554670
 ```
